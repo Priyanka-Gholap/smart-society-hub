@@ -5,6 +5,7 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 const testRoutes = require('./routes/testRoutes');
 const authRoutes = require('./routes/authRoutes');
+const societyRoutes = require("./routes/societyRoutes");
 
 connectDB();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/test', testRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/api/societies", societyRoutes);
 
 
 app.get("/", (req, res) => {
