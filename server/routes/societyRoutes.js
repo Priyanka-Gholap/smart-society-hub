@@ -1,30 +1,36 @@
-const express = require("express");
+import express from 'express';
+import {
+  createSociety,
+  getSocieties,
+  getSocietyById,
+  updateSociety,
+  deleteSociety,
+  joinSociety,
+  getSocietyMembers,
+  approveSociety,
+  getSocietyStatistics,
+} from '../controllers/society/societyController.js';
+import { authMiddleware, authorize, requireSocietyAdmin } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
 
-const authMiddleware = require("../middleware/authMiddleware");
+// Public Routes
+router.post('/join', authMiddleware, joinSociety);
 
-const {
-  createSociety,
-    joinSociety,
-    getMySociety
-} = require("../controllers/societyController");
+// Protected Routes
+router.use(authMiddleware);
 
-router.post(
-  "/create",
-  authMiddleware,
-  createSociety
-);
+router.post('/create', createSociety);
+router.get('/', getSocieties);
+router.get('/:id', getSocietyById);
+router.get('/:id/members', getSocietyMembers);
+router.get('/:id/statistics', getSocietyStatistics);
 
-router.post(
-  "/join",
-  authMiddleware,
-  joinSociety
-);
+// Admin Routes
+router.put('/:id', requireSocietyAdmin, updateSociety);
+router.delete('/:id', requireSocietyAdmin, deleteSociety);
 
-router.get(
-    "/my-society",
-    authMiddleware,
-    getMySociety
-);
+// Super Admin Routes
+router.put('/:id/approve', authorize('super_admin'), approveSociety);
 
-module.exports = router;
+export default router;

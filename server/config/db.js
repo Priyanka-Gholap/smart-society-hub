@@ -1,16 +1,22 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
-    console.log(process.env.MONGO_URI);
+    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/smart-society-hub';
+    
+    const conn = await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
 
-    await mongoose.connect(process.env.MONGO_URI);
-
-    console.log("MongoDB Connected");
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    return conn;
   } catch (error) {
-    console.error("DB ERROR:", error.message);
+    console.error(`❌ MongoDB Connection Error: ${error.message}`);
     process.exit(1);
   }
 };
 
-module.exports = connectDB;
+export default connectDB;
