@@ -1,7 +1,9 @@
-// client/src/utils/apiClient.js
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:5000/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -29,8 +31,9 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
       localStorage.removeItem('user');
-      window.location.href = '/auth';
+      window.location.href = '/auth/login';
     }
     return Promise.reject(error);
   }

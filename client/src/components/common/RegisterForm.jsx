@@ -37,10 +37,14 @@ function RegisterForm() {
     setError('');
     setLoading(true);
     try {
-      await register(form);
-      navigate('/app/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      const result = await register(form);
+      if (result.success) {
+        navigate('/app/dashboard');
+      } else {
+        setError(result.error || 'Registration failed. Please try again.');
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }

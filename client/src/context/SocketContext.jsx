@@ -8,11 +8,22 @@ export function SocketProvider({ children }) {
   const { user } = useAuth();
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const societyId =
+    typeof user?.society === 'object' ? user?.society?._id || user?.society?.id : user?.society;
 
   useEffect(() => {
-    if (!user?.society) return;
+    if (!societyId) {
+      setSocket(null);
+      setIsConnected(false);
+      return undefined;
+    }
 
-    const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    const apiBaseUrl =
+      import.meta.env.VITE_API_BASE_URL ||
+      import.meta.env.VITE_API_URL ||
+      'http://localhost:5000/api';
+    const socketUrl = apiBaseUrl.replace(/\/api\/?$/, '');
+
     const newSocket = io(socketUrl, {
       auth: {
         token: localStorage.getItem('authToken'),
@@ -24,26 +35,22 @@ export function SocketProvider({ children }) {
     });
 
     newSocket.on('connect', () => {
-      console.log('✅ Socket.io connected:', newSocket.id);
       setIsConnected(true);
-      newSocket.emit('join_society', user.society);
+      newSocket.emit('join_society', societyId);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('❌ Socket.io disconnected');
       setIsConnected(false);
-    });
-
-    newSocket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
     });
 
     setSocket(newSocket);
 
     return () => {
       newSocket.disconnect();
+      setSocket(null);
+      setIsConnected(false);
     };
-  }, [user?.society]);
+  }, [societyId]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

@@ -4,8 +4,19 @@ import api from '../utils/api.js';
 
 export const AuthContext = createContext();
 
+const normalizeUser = (user) => {
+  if (!user) {
+    return null;
+  }
+
+  return {
+    ...user,
+    id: user.id || user._id,
+  };
+};
+
 const initialState = {
-  user: JSON.parse(localStorage.getItem('user')) || null,
+  user: normalizeUser(JSON.parse(localStorage.getItem('authUser') || localStorage.getItem('user') || 'null')),
   token: localStorage.getItem('authToken') || null,
   loading: false,
   error: null,
@@ -18,7 +29,7 @@ const authReducer = (state, action) => {
     case 'AUTH_SUCCESS':
       return {
         ...state,
-        user: action.payload.user,
+        user: normalizeUser(action.payload.user),
         token: action.payload.token,
         loading: false,
         error: null,
@@ -39,7 +50,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (state.token) {
       localStorage.setItem('authToken', state.token);
+      localStorage.setItem('authUser', JSON.stringify(state.user));
       localStorage.setItem('user', JSON.stringify(state.user));
+    } else {
+      localStorage.removeItem('authUser');
+      localStorage.removeItem('user');
     }
   }, [state.token, state.user]);
 
@@ -79,9 +94,38 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
     localStorage.removeItem('user');
     dispatch({ type: 'AUTH_LOGOUT' });
   }, []);
+
+  const refreshProfile = useCallback(async () => {
+    try {
+      const response = await api.get('/auth/me');
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: {
+          user: response.data.user,
+          token: localStorage.getItem('authToken'),
+        },
+      });
+      return { success: true, data: response.data.user };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to refresh profile';
+      dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
+      return { success: false, error: errorMessage };
+    }
+  }, []);
+
+  const setUser = useCallback((user) => {
+    dispatch({
+      type: 'AUTH_SUCCESS',
+      payload: {
+        user,
+        token: state.token,
+      },
+    });
+  }, [state.token]);
 
   const updateLocation = useCallback(async (latitude, longitude) => {
     try {
@@ -103,6 +147,8 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
+    refreshProfile,
+    setUser,
     updateLocation,
   }}
 >

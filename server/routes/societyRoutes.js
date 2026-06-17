@@ -7,6 +7,8 @@ import {
   joinSociety,
   getMySociety,
   searchSocieties,
+  getSocietyStatistics,
+  getSocietyMembers,
 } from '../controllers/societyController.js';
 
 const router = express.Router();
@@ -19,5 +21,7 @@ router.get('/search', searchSocieties); // GET /api/societies/search?query=name&
 router.post('/create', authMiddleware, createSociety);
 router.post('/join', authMiddleware, joinSociety);
 router.get('/my-society', authMiddleware, getMySociety);
+router.get('/:id/statistics', authMiddleware, getSocietyStatistics);
+router.get('/:id/members', authMiddleware, getSocietyMembers);
 
 export default router;

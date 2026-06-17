@@ -10,8 +10,6 @@ import { useAuth } from '../hooks/useAuth.js';
 
 function DashboardLayout() {
   const { isAuthenticated, user, logout } = useAuth();
-  console.log('isAuthenticated =', isAuthenticated);
-  console.log('user =', user);
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,7 +31,6 @@ function DashboardLayout() {
   const handleLogout = () => {
     logout();
     localStorage.removeItem('authToken');
-    localStorage.removeItem('authUser');
     navigate('/');
   };
 

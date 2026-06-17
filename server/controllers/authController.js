@@ -122,3 +122,80 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate('society', 'name societyCode city state')
+      .select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        society: user.society,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to fetch profile',
+    });
+  }
+};
+
+export const updateLocation = async (req, res) => {
+  try {
+    const { latitude, longitude } = req.body;
+
+    if (latitude === undefined || longitude === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Latitude and longitude are required',
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        location: {
+          type: 'Point',
+          coordinates: [Number(longitude), Number(latitude)],
+        },
+        lastLocationUpdate: new Date(),
+      },
+      { new: true }
+    ).select('-password');
+
+    res.status(200).json({
+      success: true,
+      message: 'Location updated successfully',
+      user: {
+        id: user._id,
+        latitude: user.latitude,
+        longitude: user.longitude,
+        lastLocationUpdate: user.lastLocationUpdate,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to update location',
+    });
+  }
+};
