@@ -10,7 +10,7 @@ export const validateRegister = (data) => {
     errors.lastName = 'Last name is required';
   }
 
-  if (!data.email || !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data.email)) {
+  if (!data.email || !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(data.email)) {
     errors.email = 'Valid email is required';
   }
 

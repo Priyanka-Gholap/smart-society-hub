@@ -3,35 +3,55 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0B1120',
+        background: '#020617',
+        backgroundAlt: '#0F172A',
         surface: '#111827',
-        card: 'rgba(255,255,255,0.08)',
+        surfaceAlt: '#1E293B',
+        shell: 'rgba(8, 17, 32, 0.9)',
+        panel: 'rgba(15, 23, 42, 0.72)',
+        panelStrong: 'rgba(30, 41, 59, 0.82)',
+        card: 'rgba(15, 23, 42, 0.82)',
         primary: '#06B6D4',
-        secondary: '#3B82F6',
-        success: '#22C55E',
+        secondary: '#10B981',
         warning: '#F59E0B',
         danger: '#EF4444',
-        'text-primary': '#FFFFFF',
-        'text-secondary': '#94A3B8',
-        brand: {
-          primary: '#06B6D4',
-          secondary: '#3B82F6',
+        text: {
+          strong: '#F8FAFC',
+          base: '#E2E8F0',
+          muted: '#CBD5E1',
+          dim: '#94A3B8',
+        },
+        border: {
+          subtle: 'rgba(148, 163, 184, 0.10)',
+          strong: 'rgba(148, 163, 184, 0.22)',
+          active: 'rgba(6, 182, 212, 0.42)',
         },
       },
       boxShadow: {
-        glow: '0 20px 80px rgba(6, 182, 212, 0.18)',
-        soft: '0 24px 80px rgba(15, 23, 42, 0.28)',
+        glass: '0 24px 60px rgba(2, 6, 23, 0.38)',
+        glow: '0 0 0 1px rgba(6, 182, 212, 0.18), 0 18px 45px rgba(6, 182, 212, 0.22)',
+        danger: '0 0 0 1px rgba(239, 68, 68, 0.22), 0 18px 45px rgba(239, 68, 68, 0.16)',
+        lift: '0 18px 40px rgba(2, 6, 23, 0.34)',
+        inset: 'inset 0 1px 0 rgba(255,255,255,0.04)',
       },
       borderRadius: {
-        xl: '1.5rem',
-        '2xl': '2rem',
-        '3xl': '2.5rem',
+        xl: '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2rem',
       },
       backgroundImage: {
-        'hero-glow': 'radial-gradient(circle at top, rgba(6,182,212,0.18), transparent 28%)',
+        'app-shell':
+          'radial-gradient(circle at top, rgba(6,182,212,0.10), transparent 28%), linear-gradient(180deg, #020617 0%, #0F172A 100%)',
+        'card-glow':
+          'linear-gradient(135deg, rgba(15,23,42,0.98) 0%, rgba(30,41,59,0.88) 100%)',
       },
       fontFamily: {
-        inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Sora', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      letterSpacing: {
+        command: '0.18em',
       },
     },
   },

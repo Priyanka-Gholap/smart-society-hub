@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from "../../hooks/useAuth.js";
+import { useAuth } from '../../hooks/useAuth.js';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -43,8 +43,8 @@ function RegisterForm() {
       } else {
         setError(result.error || 'Registration failed. Please try again.');
       }
-    } catch (error) {
-      setError(error.response?.data?.message || 'Registration failed. Please try again.');
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -56,12 +56,12 @@ function RegisterForm() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="space-y-6 rounded-[2rem] border border-slate-800/80 bg-slate-950/90 p-10 shadow-2xl shadow-cyan-500/10"
+      className="space-y-6 rounded-[1.85rem] border border-border-subtle bg-surface/76 p-8 shadow-inset"
     >
       {error && (
         <motion.div
           variants={itemVariants}
-          className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-3 text-sm text-rose-300"
+          className="rounded-2xl border border-danger/30 bg-danger/10 p-3 text-sm text-rose-200"
         >
           {error}
         </motion.div>
@@ -69,30 +69,30 @@ function RegisterForm() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <motion.div variants={itemVariants}>
-          <label className="text-sm font-semibold text-slate-300" htmlFor="firstName">
+          <label className="command-label text-text-muted" htmlFor="firstName">
             First Name
           </label>
           <motion.input
             id="firstName"
             type="text"
             value={form.firstName}
-            onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-            className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-900/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+            onChange={(event) => setForm({ ...form, firstName: event.target.value })}
+            className="command-input mt-2"
             placeholder="John"
             whileFocus={{ scale: 1.02 }}
             required
           />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <label className="text-sm font-semibold text-slate-300" htmlFor="lastName">
+          <label className="command-label text-text-muted" htmlFor="lastName">
             Last Name
           </label>
           <motion.input
             id="lastName"
             type="text"
             value={form.lastName}
-            onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-            className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-900/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+            onChange={(event) => setForm({ ...form, lastName: event.target.value })}
+            className="command-input mt-2"
             placeholder="Doe"
             whileFocus={{ scale: 1.02 }}
             required
@@ -101,15 +101,15 @@ function RegisterForm() {
       </div>
 
       <motion.div variants={itemVariants}>
-        <label className="text-sm font-semibold text-slate-300" htmlFor="email">
+        <label className="command-label text-text-muted" htmlFor="email">
           Email Address
         </label>
         <motion.input
           id="email"
           type="email"
           value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-900/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+          onChange={(event) => setForm({ ...form, email: event.target.value })}
+          className="command-input mt-2"
           placeholder="you@example.com"
           whileFocus={{ scale: 1.02 }}
           required
@@ -117,31 +117,31 @@ function RegisterForm() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <label className="text-sm font-semibold text-slate-300" htmlFor="phone">
+        <label className="command-label text-text-muted" htmlFor="phone">
           Phone Number
         </label>
         <motion.input
           id="phone"
           type="tel"
           value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-900/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+          onChange={(event) => setForm({ ...form, phone: event.target.value })}
+          className="command-input mt-2"
           placeholder="+91 98765 43210"
           whileFocus={{ scale: 1.02 }}
         />
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <label className="text-sm font-semibold text-slate-300" htmlFor="password">
+        <label className="command-label text-text-muted" htmlFor="password">
           Password
         </label>
         <motion.input
           id="password"
           type="password"
           value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-900/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
-          placeholder="••••••••"
+          onChange={(event) => setForm({ ...form, password: event.target.value })}
+          className="command-input mt-2"
+          placeholder="Create a secure password"
           whileFocus={{ scale: 1.02 }}
           required
         />
@@ -153,16 +153,16 @@ function RegisterForm() {
         disabled={loading}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:shadow-lg hover:shadow-cyan-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? 'Creating account...' : 'Create account'}
       </motion.button>
 
-      <motion.p variants={itemVariants} className="text-center text-sm text-slate-400">
+      <motion.p variants={itemVariants} className="text-center text-sm text-text-dim">
         Already have an account?{' '}
-        <a href="/auth/login" className="text-cyan-300 hover:text-cyan-200 font-semibold transition">
+        <Link to="/auth/login" className="font-semibold text-primary transition hover:text-cyan-300">
           Sign in
-        </a>
+        </Link>
       </motion.p>
     </motion.form>
   );

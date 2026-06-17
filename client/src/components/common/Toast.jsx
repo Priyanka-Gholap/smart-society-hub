@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 export default function Toast({ message, variant = 'info', visible = false }) {
   const styleMap = {
-    info: 'border-cyan-400/30 text-white',
-    success: 'border-success/30 text-success',
+    info: 'border-primary/30 text-text-strong',
+    success: 'border-secondary/30 text-secondary',
     warning: 'border-warning/30 text-warning',
     danger: 'border-danger/30 text-danger',
   };

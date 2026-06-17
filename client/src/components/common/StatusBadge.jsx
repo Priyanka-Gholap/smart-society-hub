@@ -1,14 +1,14 @@
 export default function StatusBadge({ label, variant = 'primary', className = '' }) {
   const variants = {
-    primary: 'bg-white/10 text-white border border-white/10',
-    secondary: 'bg-secondary/10 text-secondary border border-secondary/20',
-    success: 'bg-success/10 text-success border border-success/20',
-    warning: 'bg-warning/10 text-warning border border-warning/20',
-    danger: 'bg-danger/10 text-danger border border-danger/20',
+    primary: 'border border-border-active bg-primary/12 text-primary shadow-glow',
+    secondary: 'border border-secondary/20 bg-secondary/12 text-secondary',
+    success: 'border border-secondary/24 bg-secondary/12 text-secondary',
+    warning: 'border border-warning/24 bg-warning/12 text-warning',
+    danger: 'border border-danger/28 bg-danger/12 text-danger',
   };
 
   return (
-    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] ${variants[variant] || variants.primary} ${className}`}>
+    <span className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-command ${variants[variant] || variants.primary} ${className}`}>
       {label}
     </span>
   );

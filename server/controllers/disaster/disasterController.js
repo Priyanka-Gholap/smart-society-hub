@@ -40,19 +40,18 @@ export const createAlert = async (req, res) => {
 
     await alert.save();
 
-    // Update society disaster status
     await Society.findByIdAndUpdate(req.user.society, {
       disasterModeEnabled: true,
       disasterModeStatus: level === 'critical' ? 'critical' : 'active',
       $inc: { 'statistics.activeAlerts': 1 },
     });
 
-    // Notify all residents in society
-    if (req.io) {
-      req.io.to(`society_${req.user.society}`).emit('emergency_alert', {
-        alert: alert,
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`society_${req.user.society}`).emit('emergency_alert', {
+        alert,
         notification: {
-          title: `🚨 ${type.toUpperCase()} ALERT`,
+          title: `${type.toUpperCase()} ALERT`,
           message: description,
           level,
         },
@@ -65,7 +64,7 @@ export const createAlert = async (req, res) => {
       alert,
     });
   } catch (error) {
-    console.error('❌ Create Alert Error:', error);
+    console.error('Create Alert Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to create alert',
@@ -86,7 +85,7 @@ export const getAlerts = async (req, res) => {
 
     const alerts = await Alert.find(filter)
       .populate('issuedBy', 'firstName lastName')
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .skip(skip)
       .sort({ createdAt: -1 });
 
@@ -96,13 +95,13 @@ export const getAlerts = async (req, res) => {
       success: true,
       alerts,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: parseInt(page, 10),
         totalPages: Math.ceil(total / limit),
         total,
       },
     });
   } catch (error) {
-    console.error('❌ Get Alerts Error:', error);
+    console.error('Get Alerts Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch alerts',
@@ -124,9 +123,8 @@ export const activateDisasterMode = async (req, res) => {
       { new: true }
     );
 
-    // Create automatic alert
     const alert = new Alert({
-      title: '🚨 DISASTER MODE ACTIVATED',
+      title: 'DISASTER MODE ACTIVATED',
       description: reason || 'Disaster mode activated for emergency management',
       type: 'other',
       level: 'critical',
@@ -138,8 +136,9 @@ export const activateDisasterMode = async (req, res) => {
 
     await alert.save();
 
-    if (req.io) {
-      req.io.to(`society_${req.user.society}`).emit('disaster_mode_activated', {
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`society_${req.user.society}`).emit('disaster_mode_activated', {
         society,
         alert,
       });
@@ -152,7 +151,7 @@ export const activateDisasterMode = async (req, res) => {
       alert,
     });
   } catch (error) {
-    console.error('❌ Activate Disaster Mode Error:', error);
+    console.error('Activate Disaster Mode Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to activate disaster mode',
@@ -172,8 +171,9 @@ export const deactivateDisasterMode = async (req, res) => {
       { new: true }
     );
 
-    if (req.io) {
-      req.io.to(`society_${req.user.society}`).emit('disaster_mode_deactivated', {
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`society_${req.user.society}`).emit('disaster_mode_deactivated', {
         society,
       });
     }
@@ -184,7 +184,7 @@ export const deactivateDisasterMode = async (req, res) => {
       society,
     });
   } catch (error) {
-    console.error('❌ Deactivate Disaster Mode Error:', error);
+    console.error('Deactivate Disaster Mode Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to deactivate disaster mode',
@@ -195,7 +195,7 @@ export const deactivateDisasterMode = async (req, res) => {
 // Submit SOS
 export const submitSOS = async (req, res) => {
   try {
-    const { type, severity, location, description } = req.body;
+    const { type, severity, location = {}, description } = req.body;
 
     const sos = new SOS({
       resident: req.user._id,
@@ -213,25 +213,25 @@ export const submitSOS = async (req, res) => {
 
     await sos.save();
 
-    // Get risk score from ML service
+    const io = req.app.get('io');
+
     try {
       const riskResponse = await axios.post(`${ML_SERVICE_URL}/api/calculate-risk`, {
         type,
         severity,
-        complaints: [], // Would get from database in real scenario
+        complaints: [],
       });
 
-      // Notify admins and volunteers
-      if (req.io) {
-        req.io.to(`society_${req.user.society}`).emit('sos_emergency', {
-          sos: sos,
+      if (io) {
+        io.to(`society_${req.user.society}`).emit('sos_emergency', {
+          sos,
           riskScore: riskResponse.data.riskScore,
         });
       }
     } catch (error) {
-      console.log('⚠️  ML Service unavailable');
-      if (req.io) {
-        req.io.to(`society_${req.user.society}`).emit('sos_emergency', { sos });
+      console.log('ML service unavailable');
+      if (io) {
+        io.to(`society_${req.user.society}`).emit('sos_emergency', { sos });
       }
     }
 
@@ -241,7 +241,7 @@ export const submitSOS = async (req, res) => {
       sos,
     });
   } catch (error) {
-    console.error('❌ SOS Error:', error);
+    console.error('SOS Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to submit SOS',
@@ -252,7 +252,7 @@ export const submitSOS = async (req, res) => {
 // Update Safety Status
 export const updateSafetyStatus = async (req, res) => {
   try {
-    const { status, location, description, emergencyDetails } = req.body;
+    const { status, location = {}, description, emergencyDetails } = req.body;
 
     const safetyStatus = new SafetyStatus({
       resident: req.user._id,
@@ -269,9 +269,9 @@ export const updateSafetyStatus = async (req, res) => {
 
     await safetyStatus.save();
 
-    // Broadcast to admins
-    if (req.io) {
-      req.io.to(`society_${req.user.society}`).emit('safety_status_update', {
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`society_${req.user.society}`).emit('safety_status_update', {
         resident: {
           id: req.user._id,
           name: `${req.user.firstName} ${req.user.lastName}`,
@@ -287,7 +287,7 @@ export const updateSafetyStatus = async (req, res) => {
       safetyStatus,
     });
   } catch (error) {
-    console.error('❌ Update Safety Status Error:', error);
+    console.error('Update Safety Status Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to update safety status',
@@ -307,7 +307,7 @@ export const getSafetyStatus = async (req, res) => {
 
     const safetyStatusList = await SafetyStatus.find(filter)
       .populate('resident', 'firstName lastName')
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .skip(skip)
       .sort({ updatedAt: -1 });
 
@@ -322,7 +322,7 @@ export const getSafetyStatus = async (req, res) => {
       summary,
     });
   } catch (error) {
-    console.error('❌ Get Safety Status Error:', error);
+    console.error('Get Safety Status Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch safety status',
@@ -362,7 +362,7 @@ export const createShelter = async (req, res) => {
       shelter,
     });
   } catch (error) {
-    console.error('❌ Create Shelter Error:', error);
+    console.error('Create Shelter Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to create shelter',
@@ -385,7 +385,7 @@ export const getShelters = async (req, res) => {
       shelters,
     });
   } catch (error) {
-    console.error('❌ Get Shelters Error:', error);
+    console.error('Get Shelters Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch shelters',
@@ -416,7 +416,7 @@ export const addResource = async (req, res) => {
       resource,
     });
   } catch (error) {
-    console.error('❌ Add Resource Error:', error);
+    console.error('Add Resource Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to add resource',
@@ -436,7 +436,7 @@ export const getResources = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const resources = await Resource.find(filter)
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .skip(skip)
       .sort({ createdAt: -1 });
 
@@ -446,13 +446,13 @@ export const getResources = async (req, res) => {
       success: true,
       resources,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: parseInt(page, 10),
         totalPages: Math.ceil(total / limit),
         total,
       },
     });
   } catch (error) {
-    console.error('❌ Get Resources Error:', error);
+    console.error('Get Resources Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch resources',
@@ -477,7 +477,6 @@ export const registerVolunteer = async (req, res) => {
 
     await volunteer.save();
 
-    // Update society volunteer count
     await Society.findByIdAndUpdate(req.user.society, {
       $inc: { 'statistics.volunteers': 1 },
     });
@@ -488,7 +487,7 @@ export const registerVolunteer = async (req, res) => {
       volunteer,
     });
   } catch (error) {
-    console.error('❌ Register Volunteer Error:', error);
+    console.error('Register Volunteer Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to register as volunteer',
@@ -509,7 +508,7 @@ export const getVolunteers = async (req, res) => {
 
     const volunteers = await Volunteer.find(filter)
       .populate('user', 'firstName lastName phone email')
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .skip(skip);
 
     const total = await Volunteer.countDocuments(filter);
@@ -518,13 +517,13 @@ export const getVolunteers = async (req, res) => {
       success: true,
       volunteers,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: parseInt(page, 10),
         totalPages: Math.ceil(total / limit),
         total,
       },
     });
   } catch (error) {
-    console.error('❌ Get Volunteers Error:', error);
+    console.error('Get Volunteers Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch volunteers',

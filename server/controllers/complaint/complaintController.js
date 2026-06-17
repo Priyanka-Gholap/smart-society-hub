@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import Complaint from '../../models/Complaint.js';
-import User from '../../models/User.js';
 import axios from 'axios';
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
@@ -17,7 +16,6 @@ export const createComplaint = async (req, res) => {
       attachments,
     } = req.body;
 
-    // Get AI predictions from ML service
     let aiClassification = {};
     let aiPriority = {};
 
@@ -33,7 +31,7 @@ export const createComplaint = async (req, res) => {
       });
       aiPriority = priorityResponse.data;
     } catch (error) {
-      console.log('⚠️  ML Service not available, using defaults');
+      console.log('ML service not available, using defaults');
     }
 
     const complaint = new Complaint({
@@ -52,9 +50,9 @@ export const createComplaint = async (req, res) => {
 
     await complaint.save();
 
-    // Notify admin via socket.io if available
-    if (req.io) {
-      req.io.to(`society_${req.user.society}`).emit('new_complaint', {
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`society_${req.user.society}`).emit('new_complaint', {
         complaintId: complaint._id,
         title,
         priority: complaint.priority,
@@ -67,7 +65,7 @@ export const createComplaint = async (req, res) => {
       complaint,
     });
   } catch (error) {
-    console.error('❌ Create Complaint Error:', error);
+    console.error('Create Complaint Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to create complaint',
@@ -85,7 +83,6 @@ export const getComplaints = async (req, res) => {
     if (category) filter.category = category;
     if (priority) filter.priority = priority;
 
-    // Residents can only see their own complaints
     if (req.user.role === 'resident') {
       filter.complainant = req.user._id;
     }
@@ -95,7 +92,7 @@ export const getComplaints = async (req, res) => {
     const complaints = await Complaint.find(filter)
       .populate('complainant', 'firstName lastName email phone')
       .populate('assignedTo', 'firstName lastName email')
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .skip(skip)
       .sort({ createdAt: -1 });
 
@@ -105,13 +102,13 @@ export const getComplaints = async (req, res) => {
       success: true,
       complaints,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: parseInt(page, 10),
         totalPages: Math.ceil(total / limit),
         total,
       },
     });
   } catch (error) {
-    console.error('❌ Get Complaints Error:', error);
+    console.error('Get Complaints Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch complaints',
@@ -135,7 +132,6 @@ export const getComplaintById = async (req, res) => {
       });
     }
 
-    // Check authorization
     if (
       req.user.role === 'resident' &&
       complaint.complainant._id.toString() !== req.user._id.toString()
@@ -151,7 +147,7 @@ export const getComplaintById = async (req, res) => {
       complaint,
     });
   } catch (error) {
-    console.error('❌ Get Complaint Error:', error);
+    console.error('Get Complaint Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch complaint',
@@ -187,9 +183,9 @@ export const updateComplaintStatus = async (req, res) => {
 
     await complaint.save();
 
-    // Notify society members
-    if (req.io) {
-      req.io.to(`society_${complaint.society}`).emit('complaint_updated', {
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`society_${complaint.society}`).emit('complaint_updated', {
         complaintId: complaint._id,
         status: complaint.status,
       });
@@ -201,7 +197,7 @@ export const updateComplaintStatus = async (req, res) => {
       complaint,
     });
   } catch (error) {
-    console.error('❌ Update Complaint Error:', error);
+    console.error('Update Complaint Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to update complaint',
@@ -235,7 +231,7 @@ export const addComplaintUpdate = async (req, res) => {
       complaint,
     });
   } catch (error) {
-    console.error('❌ Add Update Error:', error);
+    console.error('Add Update Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to add update',
@@ -247,25 +243,28 @@ export const addComplaintUpdate = async (req, res) => {
 export const getComplaintAnalytics = async (req, res) => {
   try {
     const societyId = req.user.society;
+    const societyObjectId = new mongoose.Types.ObjectId(societyId);
 
     const totalComplaints = await Complaint.countDocuments({
       society: societyId,
     });
 
     const statusCounts = await Complaint.aggregate([
-      { $match: { society: mongoose.Types.ObjectId(societyId) } },
+      { $match: { society: societyObjectId } },
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ]);
 
     const categoryCounts = await Complaint.aggregate([
-      { $match: { society: mongoose.Types.ObjectId(societyId) } },
+      { $match: { society: societyObjectId } },
       { $group: { _id: '$category', count: { $sum: 1 } } },
     ]);
 
-    const resolutionRate = (
-      (statusCounts.find((s) => s._id === 'resolved')?.count || 0) /
-      totalComplaints
-    ).toFixed(2);
+    const resolutionRate = totalComplaints
+      ? (
+          (statusCounts.find((statusEntry) => statusEntry._id === 'resolved')?.count || 0) /
+          totalComplaints
+        ).toFixed(2)
+      : '0.00';
 
     res.status(200).json({
       success: true,
@@ -277,7 +276,7 @@ export const getComplaintAnalytics = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('❌ Get Analytics Error:', error);
+    console.error('Get Analytics Error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch analytics',

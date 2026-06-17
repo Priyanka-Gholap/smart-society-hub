@@ -360,7 +360,7 @@ export const getSocietyStatistics = async (req, res) => {
 export const approveSociety = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, remarks } = req.body;
+    const { status } = req.body;
 
     if (!['approved', 'rejected'].includes(status)) {
       return res.status(400).json({

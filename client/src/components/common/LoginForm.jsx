@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from "../../hooks/useAuth.js";
+import { useAuth } from '../../hooks/useAuth.js';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,28 +26,26 @@ function LoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
-  setError('');
-  setLoading(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setLoading(true);
 
-  try {
-    const result = await login(form.email, form.password);
+    try {
+      const result = await login(form.email, form.password);
 
-    console.log("LOGIN RESULT:", result);
-
-    if (result.success) {
-      navigate('/app/dashboard');
-    } else {
-      setError(result.error);
+      if (result.success) {
+        navigate('/app/dashboard');
+      } else {
+        setError(result.error);
+      }
+    } catch (requestError) {
+      console.error(requestError);
+      setError('Login failed');
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    setError('Login failed');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <motion.form
@@ -55,27 +53,27 @@ const handleSubmit = async (event) => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="space-y-6 rounded-[2rem] border border-slate-800/80 bg-slate-950/90 p-10 shadow-2xl shadow-cyan-500/10"
+      className="space-y-6 rounded-[1.85rem] border border-border-subtle bg-surface/76 p-8 shadow-inset"
     >
       {error && (
         <motion.div
           variants={itemVariants}
-          className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-3 text-sm text-rose-300"
+          className="rounded-2xl border border-danger/30 bg-danger/10 p-3 text-sm text-rose-200"
         >
           {error}
         </motion.div>
       )}
 
       <motion.div variants={itemVariants}>
-        <label className="text-sm font-semibold text-slate-300" htmlFor="email">
+        <label className="command-label text-text-muted" htmlFor="email">
           Email Address
         </label>
         <motion.input
           id="email"
           type="email"
           value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="mt-3 w-full rounded-lg border border-slate-800 bg-slate-900/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+          onChange={(event) => setForm({ ...form, email: event.target.value })}
+          className="command-input mt-3"
           placeholder="you@example.com"
           whileFocus={{ scale: 1.02 }}
           required
@@ -83,16 +81,16 @@ const handleSubmit = async (event) => {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <label className="text-sm font-semibold text-slate-300" htmlFor="password">
+        <label className="command-label text-text-muted" htmlFor="password">
           Password
         </label>
         <motion.input
           id="password"
           type="password"
           value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="mt-3 w-full rounded-lg border border-slate-800 bg-slate-900/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
-          placeholder="••••••••"
+          onChange={(event) => setForm({ ...form, password: event.target.value })}
+          className="command-input mt-3"
+          placeholder="Enter your password"
           whileFocus={{ scale: 1.02 }}
           required
         />
@@ -104,16 +102,16 @@ const handleSubmit = async (event) => {
         disabled={loading}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:shadow-lg hover:shadow-cyan-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? 'Signing in...' : 'Sign in'}
       </motion.button>
 
-      <motion.p variants={itemVariants} className="text-center text-sm text-slate-400">
-        Don't have an account?{' '}
-        <a href="/auth/register" className="text-cyan-300 hover:text-cyan-200 font-semibold transition">
+      <motion.p variants={itemVariants} className="text-center text-sm text-text-dim">
+        Don&apos;t have an account?{' '}
+        <Link to="/auth/register" className="font-semibold text-primary transition hover:text-cyan-300">
           Create one
-        </a>
+        </Link>
       </motion.p>
     </motion.form>
   );

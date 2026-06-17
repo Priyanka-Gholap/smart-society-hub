@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { BellRing, Building2, ShieldCheck, Siren, Users } from 'lucide-react';
 
 const heroVariants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 36 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
 };
 
@@ -11,205 +12,154 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
+      staggerChildren: 0.12,
+      delayChildren: 0.18,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 18 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
-  },
-};
-
-const floatingVariants = {
-  initial: { y: 0 },
-  animate: {
-    y: [-10, 10, -10],
-    transition: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
-  },
-};
-
-const pulseVariants = {
-  initial: { scale: 1, opacity: 1 },
-  animate: {
-    scale: [1, 1.05, 1],
-    opacity: [1, 0.8, 1],
-    transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+    transition: { duration: 0.55, ease: 'easeOut' },
   },
 };
 
 function LandingPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-slate-100 overflow-hidden relative">
-      {/* Animated background orbs */}
+    <main className="relative min-h-screen overflow-hidden bg-app-shell text-text-strong">
       <motion.div
-        className="absolute top-20 left-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"
-        animate={{ y: [0, 30, 0], x: [-20, 20, -20] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute left-[8%] top-16 h-80 w-80 rounded-full bg-primary/10 blur-3xl"
+        animate={{ y: [0, 28, 0], x: [-18, 18, -18] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="absolute bottom-20 right-10 w-80 h-80 bg-rose-500/10 rounded-full blur-3xl"
-        animate={{ y: [0, -30, 0], x: [20, -20, 20] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute right-[10%] top-24 h-72 w-72 rounded-full bg-secondary/8 blur-3xl"
+        animate={{ y: [0, -24, 0], x: [14, -14, 14] }}
+        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <section className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-6 py-12 lg:px-8">
+
+      <section className="relative z-10 mx-auto flex min-h-screen max-w-[1440px] flex-col justify-center px-6 py-12 lg:px-8">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={heroVariants}
-          className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center"
+          className="grid gap-12 xl:grid-cols-[1.08fr_0.92fr] xl:items-center"
         >
           <motion.div className="space-y-8" variants={containerVariants}>
-            <motion.span
-              variants={itemVariants}
-              className="inline-flex rounded-full bg-cyan-500/20 px-4 py-2 text-sm font-semibold text-cyan-200 ring-1 ring-cyan-400/20 backdrop-blur-sm hover:bg-cyan-500/30 transition"
-            >
-              Disaster-Ready Communities powered by AI
-            </motion.span>
-            <motion.div className="space-y-6" variants={containerVariants}>
+            <motion.div variants={itemVariants} className="glass inline-flex items-center gap-3 rounded-full px-4 py-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse-gentle" />
+              <span className="text-sm font-medium text-text-base">Premium command software for resilient communities</span>
+            </motion.div>
+
+            <motion.div variants={containerVariants} className="space-y-6">
               <motion.h1
                 variants={itemVariants}
-                className="max-w-3xl text-5xl font-bold tracking-tight text-white sm:text-6xl leading-tight"
+                className="max-w-4xl text-5xl font-bold leading-tight text-text-strong sm:text-6xl xl:text-[4.35rem]"
               >
-                Smart Society Hub: Disaster-Ready Community{' '}
-                <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                  Command Center
+                Smart Society Hub for
+                <span className="block bg-gradient-to-r from-primary via-cyan-300 to-secondary bg-clip-text text-transparent">
+                  society intelligence and emergency control
                 </span>
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="max-w-2xl text-lg leading-8 text-slate-300"
+                className="max-w-2xl text-lg leading-8 text-text-muted"
               >
-                Manage society operations, emergency alerts, volunteers, shelters, and live safety status with premium SaaS-grade dashboards built for modern residential communities.
+                Unify society management, complaint tracking, emergency alerts, location intelligence, and disaster response through a futuristic operations platform built for trust.
               </motion.p>
             </motion.div>
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-col gap-4 sm:flex-row pt-4"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to="/auth/login"
-                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-8 py-3 text-base font-semibold text-slate-950 shadow-lg shadow-cyan-500/40 transition hover:shadow-xl hover:shadow-cyan-500/60"
-                >
-                  Get Started
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to="/app/dashboard"
-                  className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 px-8 py-3 text-base font-semibold text-white transition hover:border-cyan-400 hover:bg-slate-900/60 backdrop-blur-sm"
-                >
-                  Explore Demo
-                </Link>
-              </motion.div>
+
+            <motion.div variants={itemVariants} className="flex flex-col gap-4 pt-2 sm:flex-row">
+              <Link to="/auth/login" className="btn-primary px-8 py-3 text-base">
+                Enter Command Center
+              </Link>
+              <Link to="/app/dashboard" className="btn-secondary px-8 py-3 text-base">
+                Explore Live Demo
+              </Link>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-3">
+              {[
+                { label: 'Emergency Alerts', value: 'Real-time', icon: Siren },
+                { label: 'Society Management', value: 'Unified', icon: Building2 },
+                { label: 'Community Response', value: 'Mobile-ready', icon: Users },
+              ].map((item) => (
+                <div key={item.label} className="rounded-[1.55rem] border border-border-subtle bg-surface/68 p-5 shadow-inset">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="command-label">{item.label}</p>
+                    <item.icon className="h-4 w-4 text-primary" />
+                  </div>
+                  <p className="mt-4 text-lg font-semibold text-text-strong">{item.value}</p>
+                </div>
+              ))}
             </motion.div>
           </motion.div>
 
           <motion.div
-            variants={floatingVariants}
-            initial="initial"
-            animate="animate"
-            className="relative overflow-hidden rounded-[2rem] bg-slate-900/70 p-8 shadow-2xl shadow-cyan-500/20 ring-1 ring-white/10 border border-cyan-500/20 backdrop-blur-xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="glass-strong animate-float-panel relative overflow-hidden rounded-[2rem] p-8"
           >
-            {/* Card glow effect */}
-            <motion.div
-              variants={pulseVariants}
-              initial="initial"
-              animate="animate"
-              className="absolute inset-0 rounded-[2rem] bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-cyan-500/0"
-            />
-            
-            <div className="relative space-y-6 z-10">
-              <motion.div
-                variants={itemVariants}
-                className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-slate-950/80 to-slate-900/40 p-6 shadow-inner shadow-cyan-500/10 backdrop-blur-sm hover:border-cyan-400/40 transition"
-              >
-                <motion.p
-                  animate={{ opacity: [0.6, 1, 0.6] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-sm uppercase tracking-[0.24em] text-cyan-300 font-semibold"
-                >
-                  🚨 Live Emergency Feed
-                </motion.p>
-                <h2 className="mt-4 text-3xl font-semibold text-white">Critical Alert</h2>
-                <p className="mt-2 text-slate-300">Fire alert issued at Tower B. Evacuate to Assembly Point Alpha.</p>
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="rounded-3xl bg-slate-900/80 p-4 text-sm text-slate-200 ring-1 ring-slate-500/20 cursor-pointer hover:ring-cyan-400/50 transition"
-                  >
-                    <p className="font-semibold text-white">Status</p>
-                    <motion.p
-                      animate={{ color: ['#06b6d4', '#0ea5e9', '#06b6d4'] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="mt-2 font-bold"
-                    >
-                      Critical
-                    </motion.p>
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="rounded-3xl bg-slate-900/80 p-4 text-sm text-slate-200 ring-1 ring-slate-500/20 cursor-pointer hover:ring-cyan-400/50 transition"
-                  >
-                    <p className="font-semibold text-white">ETA Response</p>
-                    <motion.p
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="mt-2 text-cyan-300 font-bold"
-                    >
-                      8 min
-                    </motion.p>
-                  </motion.div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.14),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(239,68,68,0.12),transparent_18%)]" />
+            <div className="relative z-10 space-y-6">
+              <div className="alert-banner alert-danger">
+                <div className="relative flex items-start gap-3">
+                  <span className="mt-1 h-3 w-3 rounded-full bg-danger animate-pulse-gentle" />
+                  <div>
+                    <p className="command-label text-red-200">Live Emergency Feed</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-white">Critical incident active at Tower B</h2>
+                    <p className="mt-2 text-sm leading-6 text-red-100/85">
+                      Evacuation notice dispatched to residents. Assembly Point Alpha open and medical relay prepared.
+                    </p>
+                  </div>
                 </div>
-              </motion.div>
-              
-              <motion.div
-                variants={containerVariants}
-                className="grid gap-4 sm:grid-cols-2"
-              >
-                <motion.div
-                  variants={itemVariants}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  className="rounded-[1.75rem] bg-gradient-to-br from-cyan-500/15 to-slate-900/80 p-6 ring-1 ring-slate-500/30 cursor-pointer hover:ring-cyan-400/50 transition backdrop-blur-sm border border-cyan-500/20"
-                >
-                  <p className="text-sm uppercase tracking-[0.24em] text-slate-400 font-semibold">Safety Score</p>
-                  <motion.p
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                    className="mt-3 text-4xl font-bold text-cyan-300"
-                  >
-                    92
-                  </motion.p>
-                  <p className="mt-2 text-slate-400">Community readiness</p>
-                </motion.div>
-                <motion.div
-                  variants={itemVariants}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  className="rounded-[1.75rem] bg-gradient-to-br from-rose-500/15 to-slate-900/80 p-6 ring-1 ring-slate-500/30 cursor-pointer hover:ring-rose-400/50 transition backdrop-blur-sm border border-rose-500/20"
-                >
-                  <p className="text-sm uppercase tracking-[0.24em] text-slate-400 font-semibold">Shelters</p>
-                  <motion.p
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                    className="mt-3 text-4xl font-bold text-rose-300"
-                  >
-                    7
-                  </motion.p>
-                  <p className="mt-2 text-slate-400">Active zones</p>
-                </motion.div>
-              </motion.div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.6rem] border border-primary/20 bg-primary/10 p-5 shadow-glow">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="command-label text-primary">Command Health</p>
+                    <ShieldCheck className="h-4 w-4 text-primary" />
+                  </div>
+                  <p className="mt-4 text-4xl font-semibold text-text-strong">92%</p>
+                  <p className="mt-2 text-sm text-text-muted">Operational readiness across connected communities</p>
+                </div>
+                <div className="rounded-[1.6rem] border border-border-subtle bg-surface/70 p-5 shadow-inset">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="command-label">Signal Queue</p>
+                    <BellRing className="h-4 w-4 text-warning" />
+                  </div>
+                  <p className="mt-4 text-4xl font-semibold text-text-strong">08</p>
+                  <p className="mt-2 text-sm text-text-muted">Emergency alerts, notices, and task escalations in progress</p>
+                </div>
+              </div>
+
+              <div className="rounded-[1.75rem] border border-border-subtle bg-surface/70 p-6 shadow-inset">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="command-label">Platform Coverage</p>
+                    <p className="mt-2 text-xl font-semibold text-text-strong">Society Management + Disaster Command + Community Notices</p>
+                  </div>
+                  <span className="rounded-full border border-secondary/20 bg-secondary/12 px-3 py-1 text-sm font-semibold text-secondary">
+                    Multi-module
+                  </span>
+                </div>
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  {[
+                    'Complaint tracking',
+                    'Emergency contacts',
+                    'Location-based shelters',
+                  ].map((item) => (
+                    <div key={item} className="rounded-2xl border border-border-subtle bg-backgroundAlt/76 px-4 py-3 text-sm text-text-base">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </motion.div>
         </motion.div>

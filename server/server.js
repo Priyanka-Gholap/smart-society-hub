@@ -15,10 +15,7 @@ const io = new Server(httpServer, {
   },
 });
 
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+app.set('io', io);
 
 io.on('connection', (socket) => {
   socket.on('join_society', (societyId) => {

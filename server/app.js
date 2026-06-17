@@ -34,6 +34,7 @@ app.get('/', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
+  void next;
   console.error('Error:', err);
 
   const status = err.status || 500;
