@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { useEffect, useState } from 'react';
 import { Activity, AlertTriangle, BellRing, ShieldCheck, Users } from 'lucide-react';
-import useAuth from '../hooks/useAuth.js';
+import { useAuth } from '../hooks/useAuth';
 import api from '../utils/api.js';
 import GlassCard from '../components/common/GlassCard.jsx';
 import StatusBadge from '../components/common/StatusBadge.jsx';

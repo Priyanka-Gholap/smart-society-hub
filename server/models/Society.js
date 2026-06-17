@@ -1,3 +1,4 @@
+// server/models/Society.js
 import mongoose from 'mongoose';
 
 const societySchema = new mongoose.Schema(
@@ -29,6 +30,26 @@ const societySchema = new mongoose.Schema(
       type: String,
       required: [true, 'Pincode is required'],
     },
+    // Geolocation Fields (NEW)
+    location: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: [true, 'Coordinates are required'],
+        validate: {
+          validator: function(v) {
+            return v.length === 2 && 
+                   v[0] >= -180 && v[0] <= 180 && 
+                   v[1] >= -90 && v[1] <= 90;
+          },
+          message: 'Invalid coordinates format',
+        },
+      },
+    },
     latitude: {
       type: Number,
       required: [true, 'Latitude is required'],
@@ -47,6 +68,11 @@ const societySchema = new mongoose.Schema(
       required: true,
       min: 1,
     },
+    occupiedFlats: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     societyCode: {
       type: String,
       required: true,
@@ -58,10 +84,29 @@ const societySchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    members: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    }],
+    pendingRequests: [{
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+      status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending',
+      },
+      requestedAt: {
+        type: Date,
+        default: Date.now,
+      },
+    }],
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected', 'suspended'],
-      default: 'pending',
+      default: 'approved',
     },
     isVerified: {
       type: Boolean,
@@ -108,11 +153,13 @@ const societySchema = new mongoose.Schema(
   }
 );
 
-// Indexes for faster queries
+// Geospatial Indexes (CRITICAL)
+societySchema.index({ 'location': '2dsphere' }); // For geospatial queries
 societySchema.index({ societyCode: 1 });
 societySchema.index({ admin: 1 });
 societySchema.index({ city: 1, state: 1 });
 societySchema.index({ disasterModeEnabled: 1 });
 societySchema.index({ status: 1 });
+societySchema.index({ pincode: 1 });
 
 export default mongoose.model('Society', societySchema);

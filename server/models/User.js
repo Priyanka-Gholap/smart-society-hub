@@ -1,3 +1,4 @@
+// server/models/User.js
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
@@ -34,6 +35,25 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['super_admin', 'society_admin', 'resident'],
       default: 'resident',
+    },
+    // Location Fields (NEW)
+    location: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+    },
+    latitude: Number,
+    longitude: Number,
+    lastLocationUpdate: Date,
+    allowLocationTracking: {
+      type: Boolean,
+      default: true,
     },
     society: {
       type: mongoose.Schema.Types.ObjectId,
@@ -88,9 +108,10 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Index for faster queries
+// Indexes
 userSchema.index({ email: 1 });
 userSchema.index({ society: 1 });
 userSchema.index({ role: 1 });
+userSchema.index({ 'location': '2dsphere' }); // Geospatial index
 
 export default mongoose.model('User', userSchema);

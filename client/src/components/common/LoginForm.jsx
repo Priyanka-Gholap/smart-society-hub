@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import useAuth from '../../hooks/useAuth.js';
+import { useAuth } from "../../hooks/useAuth.js";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,19 +26,28 @@ function LoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      await login(form);
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  setError('');
+  setLoading(true);
+
+  try {
+    const result = await login(form.email, form.password);
+
+    console.log("LOGIN RESULT:", result);
+
+    if (result.success) {
       navigate('/app/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
-    } finally {
-      setLoading(false);
+    } else {
+      setError(result.error);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setError('Login failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <motion.form

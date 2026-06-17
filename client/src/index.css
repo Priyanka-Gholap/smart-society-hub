@@ -33,6 +33,11 @@ select {
   font: inherit;
 }
 
+/* Leaflet map styling for dark theme */
+.leaflet-container { background: #0f172a; }
+.leaflet-tile { filter: invert(0.9) hue-rotate(200deg); }
+.leaflet-popup { background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.3); }
+
 #root {
   min-height: 100vh;
 }

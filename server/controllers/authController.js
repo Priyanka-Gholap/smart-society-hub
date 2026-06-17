@@ -98,21 +98,14 @@ export const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: "Invalid email or password",
       });
     }
 
-    // Update last login
-    user.lastLogin = new Date();
-    await user.save();
-
-    // Generate token
-    const token = generateToken(user._id);
-
     res.status(200).json({
       success: true,
-      message: 'Login successful',
-      token,
+      message: "Login successful",
+      token: generateToken(user._id),
       user: {
         id: user._id,
         firstName: user.firstName,
@@ -120,91 +113,7 @@ export const loginUser = async (req, res) => {
         email: user.email,
         phone: user.phone,
         role: user.role,
-        society: user.society
-      }
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Login failed'
-    });
-  }
-};
-
-// Get Current User
-export const getCurrentUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).populate('society', 'name societyCode');
-
-    res.status(200).json({
-      success: true,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        society: user.society,
-        flat: user.flat,
-        building: user.building,
-        isVerified: user.isVerified,
-        profileImage: user.profileImage,
-        lastLogin: user.lastLogin
-      }
-    });
-  } catch (error) {
-    console.error('Get user error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to fetch user'
-    });
-  }
-};
-
-// Update User Profile
-export const updateProfile = async (req, res) => {
-  try {
-    const { firstName, lastName, phone, profileImage, emergencyContact } = req.body;
-
-    const updates = {};
-    if (firstName) updates.firstName = firstName;
-    if (lastName) updates.lastName = lastName;
-    if (phone) updates.phone = phone;
-    if (profileImage) updates.profileImage = profileImage;
-    if (emergencyContact) updates.emergencyContact = emergencyContact;
-
-    const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true });
-
-    res.status(200).json({
-      success: true,
-      message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        profileImage: user.profileImage
-      }
-    });
-  } catch (error) {
-    console.error('Update profile error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to update profile'
-    });
-  }
-};
-
-// Logout User
-export const logoutUser = async (req, res) => {
-  try {
-    res.status(200).json({
-      success: true,
-      message: 'Logout successful'
+      },
     });
   } catch (error) {
     res.status(500).json({

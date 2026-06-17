@@ -6,10 +6,12 @@ import SocietyPage from './SocietyPage.jsx';
 import DisasterDashboard from './DisasterDashboard.jsx';
 import ComplaintsPage from './ComplaintsPage.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
-import useAuth from '../hooks/useAuth.js';
+import { useAuth } from '../hooks/useAuth.js';
 
 function DashboardLayout() {
   const { isAuthenticated, user, logout } = useAuth();
+  console.log('isAuthenticated =', isAuthenticated);
+  console.log('user =', user);
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);

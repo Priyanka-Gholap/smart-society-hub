@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import api from '../utils/api.js';
-import useAuth from '../hooks/useAuth.js';
+import { useAuth } from '../hooks/useAuth.js';
 import { useSocket } from '../context/SocketContext.jsx';
 import GlassCard from '../components/common/GlassCard.jsx';
 import StatusBadge from '../components/common/StatusBadge.jsx';

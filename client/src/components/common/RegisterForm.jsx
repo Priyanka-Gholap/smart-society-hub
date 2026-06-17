@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import useAuth from '../../hooks/useAuth.js';
+import { useAuth } from "../../hooks/useAuth.js";
 
 const containerVariants = {
   hidden: { opacity: 0 },
